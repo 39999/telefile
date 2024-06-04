@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# 检查是否已经输入了robot token和群组chat_id
+if [ ! -f .telegram_config ]; then
+    echo "Please enter your Telegram robot token and group chat ID:"
+    read -p "Telegram robot token: " TG_BOT_TOKEN
+    read -p "Group chat ID: " TG_CHAT_ID
+    echo "TG_BOT_TOKEN=$TG_BOT_TOKEN" > .telegram_config
+    echo "TG_CHAT_ID=$TG_CHAT_ID" >> .telegram_config
+    echo "Configurations saved."
+else
+    # 从配置文件中读取robot token和群组chat_id
+    source .telegram_config
+fi
+
+# 如果没有传递文件路径作为参数，则要求用户输入
+if [ $# -eq 0 ]; then
+    read -p "Enter the file path: " FILE_PATH
+else
+    FILE_PATH=$1
+fi
+
+# 发送文件到群组
+curl -sF document=@$FILE_PATH "https://api.telegram.org/bot$TG_BOT_TOKEN/sendDocument?chat_id=$TG_CHAT_ID"
